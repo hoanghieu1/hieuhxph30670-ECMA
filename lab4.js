@@ -102,21 +102,25 @@ fetchMultipleData(["/api/user/1", "/api/user/2"])
 
 
                                                                  // Async/Await
-// Bài 1: Viết hàm async fetchData
-// Viết lại hàm này sử dụng async/await
-// BÀI 1
-async function processOrder(orderId) {
+// BÀI 1: Viết lại callback hell bằng async/await với API 
+async function processOrder(userId) {
   try {
-    const order = await getOrder(orderId);
-    const user = await getUser(order.userId);
-    const products = await getProducts(order.productIds);
-    console.log({ order, user, products });
+    const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    if (!res.ok) throw new Error("Không tìm thấy người dùng!");
+    const user = await res.json();
+
+    console.log("Thông tin người dùng:", user);
   } catch (error) {
     console.error("Lỗi khi xử lý đơn hàng:", error.message);
   }
 }
 
-// BÀI 2
+// Test
+processOrder(1);   //  Thành công
+processOrder(9999); //  Lỗi (không có user này)
+
+
+// BÀI 2: Xử lý lỗi với async/await
 async function safeApiCall(apiFunction, ...args) {
   try {
     const result = await apiFunction(...args);
@@ -126,4 +130,20 @@ async function safeApiCall(apiFunction, ...args) {
   }
 }
 
+// Hàm fetchData gọi API thật
+async function fetchData(userId) {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+  if (!res.ok) throw new Error("Không tìm thấy dữ liệu!");
+  const data = await res.json();
+  return data;
+}
+
+// Test safeApiCall
+(async () => {
+  const res1 = await safeApiCall(fetchData, 2);
+  console.log("Kết quả thành công:", res1);
+
+  const res2 = await safeApiCall(fetchData, 9999);
+  console.log("Kết quả lỗi:", res2);
+})();
 
