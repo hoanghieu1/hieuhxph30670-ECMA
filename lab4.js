@@ -104,21 +104,26 @@ fetchMultipleData(["/api/user/1", "/api/user/2"])
                                                                  // Async/Await
 // Bài 1: Viết hàm async fetchData
 // Viết lại hàm này sử dụng async/await
+// BÀI 1
 async function processOrder(orderId) {
-  const order = await getOrder(orderId);
-  const user = await getUser(order.userId);
-  const products = await getProducts(order.productIds);
-
-  return { order, user, products };
+  try {
+    const order = await getOrder(orderId);
+    const user = await getUser(order.userId);
+    const products = await getProducts(order.productIds);
+    console.log({ order, user, products });
+  } catch (error) {
+    console.error("Lỗi khi xử lý đơn hàng:", error.message);
+  }
 }
 
-// Bài 2: Xử lý lỗi với async/await
+// BÀI 2
 async function safeApiCall(apiFunction, ...args) {
   try {
     const result = await apiFunction(...args);
     return { success: true, data: result };
   } catch (error) {
-    return { success: false, error };
+    return { success: false, error: error.message || error };
   }
 }
+
 
